@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tasbih</title>
+<meta name="theme-color" content="#f4eddc">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Tasbih">
+<script>try{var s=JSON.parse(localStorage.getItem('tasbih.v1')||'{}');document.documentElement.dataset.theme=s.theme||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light')}catch(e){}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:wght@500;600&display=swap">
+<style>
+:root{--bg:#f4eddc;--ink:#2e3a33;--mut:#7d7f6b;--acc:#3d6b50;--trk:#ddd3b9;--card:#ebe2cb;--glow:transparent;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--ink:#e9e2cf;--mut:#8b866f;--acc:#d4b062;--trk:#1c1a13;--card:#0f0e0a;--glow:#d4b06299}}
+:root[data-theme="dark"]{--bg:#000;--ink:#e9e2cf;--mut:#8b866f;--acc:#d4b062;--trk:#1c1a13;--card:#0f0e0a;--glow:#d4b06299}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;flex-direction:column;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation;transition:background .4s,color .4s}
+button,input{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;color:var(--mut);font-size:13px}
+.hb{display:flex;gap:6px}
+.hb button{padding:7px 12px;border-radius:99px;color:var(--mut)}
+.hb button:hover{background:var(--card)}
+main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;min-height:0;padding:0 16px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;align-items:center}
+.chips button,.chips input{padding:7px 14px;border-radius:99px;background:var(--card);color:var(--mut);font-size:13px;border:1px solid transparent;transition:.2s}
+.chips button[aria-pressed=true],.chips button.on{color:var(--bg);background:var(--acc)}
+.chips input{width:88px;text-align:center;outline:none}
+.chips input:focus{border-color:var(--acc)}
+.phrase{text-align:center;min-height:118px;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.ar{font:400 clamp(26px,7.5vw,34px)/1.5 Amiri,"Noto Naskh Arabic",serif;direction:rtl}
+.tr{font-weight:600;letter-spacing:.02em}
+.en{color:var(--mut);font-size:13px}
+.ringw{position:relative;width:min(74vw,44vh,320px);aspect-ratio:1}
+.ringw svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.ringw circle{fill:none;stroke-width:6;stroke-linecap:round}
+.trk{stroke:var(--trk)}
+.prg{stroke:var(--acc);stroke-dasharray:678.58;stroke-dashoffset:678.58;transition:stroke-dashoffset .35s cubic-bezier(.3,.7,.2,1);filter:drop-shadow(0 0 6px var(--glow))}
+.rip{position:absolute;inset:0;border-radius:50%;border:2px solid var(--acc);opacity:0;pointer-events:none}
+#ring{position:absolute;inset:0;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+#num{font:600 clamp(60px,20vw,100px)/1 "Cormorant Garamond",Georgia,serif;font-variant-numeric:tabular-nums}
+#tg{color:var(--mut);font-size:12px;letter-spacing:.08em}
+.done{animation:pulse 1s ease-out}
+@keyframes pulse{40%{filter:drop-shadow(0 0 18px var(--acc))}}
+#row{min-height:36px}
+.dots button{width:10px;height:10px;padding:0;border-radius:50%;background:var(--trk)}
+.dots button.on{background:var(--acc);transform:scale(1.4)}
+footer{padding:10px 14px 18px;display:flex;flex-direction:column;gap:10px;align-items:center}
+#toast{position:fixed;top:64px;left:50%;transform:translateX(-50%);background:var(--card);color:var(--ink);padding:8px 16px;border-radius:99px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none}
+#toast.show{opacity:1}
+.hb #inf{width:30px;height:30px;padding:0;border:1px solid var(--trk);font:italic 600 15px Georgia,serif;color:var(--ink)}
+#md{position:fixed;inset:0;background:#0009;display:flex;align-items:flex-end;justify-content:center;z-index:5}
+#md[hidden]{display:none}
+.sh{background:var(--bg);width:min(560px,100%);max-height:86%;border-radius:20px 20px 0 0;display:flex;flex-direction:column;border:1px solid var(--trk);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tb{display:flex;align-items:center;gap:6px;padding:14px 16px 8px}
+.tb .chips{justify-content:flex-start;flex:1}
+.pn{overflow:auto;padding:4px 18px 22px}
+.ev{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--trk)}
+.ev.nx{background:linear-gradient(90deg,var(--card),transparent);margin:0 -10px;padding:12px 10px;border-radius:12px}
+.dt{width:48px;flex:none;text-align:center;color:var(--acc)}
+.dt b{display:block;font:600 24px/1.1 "Cormorant Garamond",Georgia,serif}
+.dt small{display:block;font-size:11px;text-transform:uppercase;color:var(--mut)}
+.ev h3{margin:0;font-size:15px}
+.ev p{margin:2px 0;color:var(--mut);font-size:13px}
+.ev em{font-style:normal;font-size:12px;color:var(--acc)}
+.pn h2{font:600 20px "Cormorant Garamond",Georgia,serif;margin:6px 0}
+.pn .fn{font-size:12px;color:var(--mut);margin-top:14px}
+.btn{display:block;text-align:center;padding:12px;border-radius:99px;background:var(--acc);color:var(--bg);text-decoration:none;font-weight:600;margin:16px 0 8px}
+.btn[aria-disabled=true]{opacity:.45;pointer-events:none}
+.btn[hidden]{display:none}
+.qr{width:208px;margin:14px auto;background:#fff;border-radius:14px;padding:8px}
+.qr svg{display:block;width:100%;height:auto}
+.upi{display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px}
+.upi button{padding:5px 12px;border-radius:99px;background:var(--card);color:var(--mut);font-size:12px}
+#toast{z-index:9}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div id="st" aria-live="polite"></div>
+  <div class="hb"><button id="th" aria-label="Switch theme">Theme</button><button id="rs">Reset</button><button id="inf" aria-label="Info: Islamic dates and support">i</button></div>
+</header>
+<main>
+  <nav class="chips" id="pr" aria-label="Dhikr presets"></nav>
+  <section class="phrase"><div class="ar" id="ar" lang="ar" dir="rtl"></div><div class="tr" id="tr"></div><div class="en" id="en"></div></section>
+  <div class="ringw" id="rw">
+    <svg viewBox="0 0 240 240" aria-hidden="true"><circle class="trk" cx="120" cy="120" r="108"/><circle class="prg" id="pg" cx="120" cy="120" r="108"/></svg>
+    <i class="rip" id="rip"></i>
+    <button id="ring" aria-label="Count"><span id="num">0</span><small id="tg"></small></button>
+  </div>
+  <div class="chips dots" id="row"></div>
+</main>
+<footer>
+  <div class="chips" id="ctl">
+    <button data-s="1">+1</button><button data-s="3">+3</button><button data-s="10">+10</button><button id="un">Undo</button>
+  </div>
+  <div class="chips" id="tgl">
+    <button data-k="any">Tap anywhere</button><button data-k="snd">Sound</button><button data-k="hap">Haptics</button><button data-k="auto">Auto-advance</button>
+  </div>
+</footer>
+<div id="md" hidden role="dialog" aria-modal="true" aria-label="Info">
+ <div class="sh">
+  <div class="tb"><div class="chips" id="tabs"><button data-tab="pt" aria-pressed="true">Buy me a tea</button><button data-tab="pd" aria-pressed="false">Islamic dates</button></div><button id="cl" aria-label="Close">✕</button></div>
+  <div class="pn" id="pd" hidden></div>
+  <div class="pn" id="pt">
+   <h2>Buy me a tea</h2>
+   <p>Tasbih is free, ad-free and made with care. If it has brought a little calm to your day, you can support it with a cup of tea.</p>
+   <div class="qr" id="qr" role="img" aria-label="UPI QR code"></div>
+   <div class="upi"><span id="uid"></span><button id="cp">Copy</button></div>
+   <a class="btn" id="tea" hidden>Pay with UPI app</a>
+   <p class="fn">Scan with any UPI app (Google Pay, PhonePe, Paytm, BHIM) and enter any amount you like. Payments go directly to Shadin Azeez through UPI; nothing is processed inside this app.</p>
+  </div>
+ </div>
+</div>
+<div id="toast" role="status"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+const K='tasbih.v1',C=678.58,$=id=>document.getElementById(id);
+const P={
+ free:{n:'Free',it:[{ar:'ذِكْر',tr:'Dhikr',en:'Free count'}]},
+ salah:{n:'After Salah',it:[
+  {ar:'سُبْحَانَ ٱللَّٰهِ',tr:'Subhan Allah',en:'Glory be to Allah',t:33},
+  {ar:'ٱلْحَمْدُ لِلَّٰهِ',tr:'Alhamdulillah',en:'All praise is due to Allah',t:33},
+  {ar:'ٱللَّٰهُ أَكْبَرُ',tr:'Allahu Akbar',en:'Allah is the Greatest',t:34}]},
+ istighfar:{n:'Istighfar',it:[{ar:'أَسْتَغْفِرُ ٱللَّٰهَ',tr:'Astaghfirullah',en:'I seek forgiveness from Allah',t:100}]},
+ tahlil:{n:'Tahlil',it:[{ar:'لَا إِلَٰهَ إِلَّا ٱللَّٰهُ',tr:'La ilaha illallah',en:'There is no god but Allah',t:100}]}
+};
+let S={p:'free',i:0,c:0,target:33,step:1,any:true,snd:false,hap:true,auto:true,theme:null,days:{}};
+try{Object.assign(S,JSON.parse(localStorage.getItem(K)||'{}'))}catch(e){}
+if(!P[S.p])S.p='free';
+S.theme=S.theme||document.documentElement.dataset.theme||'light';
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const dk=d=>d.toLocaleDateString('en-CA');
+let hist=[],ac,rt;
+
+const cur=()=>P[S.p].it[Math.min(S.i,P[S.p].it.length-1)];
+const target=()=>S.p==='free'?S.target:cur().t;
+const streak=()=>{let n=0,d=new Date();if(!S.days[dk(d)])d.setDate(d.getDate()-1);while(S.days[dk(d)]){n++;d.setDate(d.getDate()-1)}return n};
+const today=n=>{const k=dk(new Date());S.days[k]=Math.max(0,(S.days[k]||0)+n);if(!S.days[k])delete S.days[k];
+ const ks=Object.keys(S.days).sort();while(ks.length>90)delete S.days[ks.shift()]};
+
+function snd(f=620,d=.07,v=.15){if(!S.snd)return;try{ac=ac||new AudioContext();const t=ac.currentTime,o=ac.createOscillator(),g=ac.createGain();
+ o.type='triangle';o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*.5,t+d);
+ g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+d)}catch(e){}}
+const buzz=p=>{if(S.hap&&navigator.vibrate)navigator.vibrate(p)};
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(rt);rt=setTimeout(()=>t.classList.remove('show'),2200)}
+
+function milestone(){
+ buzz([30,60,30]);snd(880,.5,.12);setTimeout(()=>snd(1320,.6,.1),160);
+ if(!rm){$('rip').animate([{transform:'scale(.9)',opacity:.6},{transform:'scale(1.35)',opacity:0}],{duration:900,easing:'ease-out'});
+  const w=$('rw');w.classList.remove('done');void w.offsetWidth;w.classList.add('done')}
+}
+function next(){
+ const n=P[S.p].it.length;
+ if(S.i<n-1){S.i++;S.c=0;hist=[];toast('Next: '+cur().tr)}
+ else{S.i=0;S.c=0;hist=[];toast('Adhkar complete. Ma sha Allah')}
+ save();renderRow();render()
+}
+function add(n){
+ const t=target(),prev=S.c;S.c+=n;hist.push(n);if(hist.length>50)hist.shift();today(n);
+ if(prev<t&&S.c>=t){milestone();
+  if(S.p!=='free'){if(S.auto)setTimeout(next,900);else toast('Target reached')}
+ }else{buzz(12);snd()}
+ save();render(true)
+}
+function undo(){
+ if(!S.c)return;const n=Math.min(hist.pop()||1,S.c);S.c-=n;today(-n);buzz(8);save();render(true)
+}
+
+function render(bump){
+ const it=cur(),t=target(),m=P[S.p].it.length;
+ $('ar').textContent=it.ar;$('tr').textContent=it.tr;$('en').textContent=it.en;
+ $('num').textContent=S.c;
+ $('pg').style.strokeDashoffset=C*(1-Math.min(S.c/t,1));
+ $('tg').textContent='OF '+t+(m>1?'  ·  '+(S.i+1)+'/'+m:'');
+ const s=streak(),td=S.days[dk(new Date())]||0;
+ $('st').textContent=(s?s+'-day streak  ·  ':'')+'Today '+td;
+ document.querySelectorAll('[data-s]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.s===S.step));
+ document.querySelectorAll('[data-k]').forEach(b=>b.setAttribute('aria-pressed',!!S[b.dataset.k]));
+ $('th').textContent=S.theme==='dark'?'Sand':'Midnight';
+ document.documentElement.dataset.theme=S.theme;
+ if(bump&&!rm)$('num').animate([{transform:'translateY(6px)',opacity:.4},{transform:'none',opacity:1}],{duration:180,easing:'ease-out'});
+}
+function renderRow(){
+ const r=$('row'),m=P[S.p].it;
+ r.className='chips'+(S.p==='free'?'':' dots');
+ if(S.p==='free'){
+  r.innerHTML=[33,99,100,1000].map(n=>`<button data-t="${n}" class="${S.target===n?'on':''}">${n}</button>`).join('')+
+   `<input id="cu" type="number" inputmode="numeric" min="1" placeholder="Custom" aria-label="Custom target">`;
+ }else r.innerHTML=m.length>1?m.map((x,i)=>`<button data-i="${i}" class="${i===S.i?'on':''}" aria-label="${x.tr}"></button>`).join(''):'';
+ $('pr').innerHTML=Object.keys(P).map(k=>`<button data-p="${k}" aria-pressed="${k===S.p}">${P[k].n}</button>`).join('');
+}
+
+$('ring').addEventListener('click',()=>add(S.step));
+document.addEventListener('pointerdown',e=>{
+ if(!S.any||e.target.closest('button,input,header,footer,nav,.dots,.chips,#md'))return;add(S.step)});
+document.addEventListener('keydown',e=>{
+ if(e.target.closest('input,button')||!$('md').hidden)return;
+ if(e.code==='Space'){e.preventDefault();add(S.step)}else if(e.key==='Backspace')undo()});
+$('pr').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b)return;
+ S.p=b.dataset.p;S.i=0;S.c=0;hist=[];save();renderRow();render()});
+$('row').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.t){S.target=+b.dataset.t}else if(b.dataset.i){S.i=+b.dataset.i;S.c=0;hist=[]}else return;
+ save();renderRow();render()});
+$('row').addEventListener('change',e=>{if(e.target.id!=='cu')return;const v=Math.max(1,Math.min(100000,parseInt(e.target.value)||0));
+ if(v){S.target=v;save();renderRow();render()}});
+$('ctl').addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(b){S.step=+b.dataset.s;save();render()}});
+$('un').addEventListener('click',undo);
+$('tgl').addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(!b)return;
+ S[b.dataset.k]=!S[b.dataset.k];if(b.dataset.k==='snd')snd(700,.06,.12);save();render()});
+$('th').addEventListener('click',()=>{S.theme=S.theme==='dark'?'light':'dark';
+ document.querySelector('meta[name=theme-color]').content=S.theme==='dark'?'#000000':'#f4eddc';save();render()});
+let rst;$('rs').addEventListener('click',e=>{
+ if(!rst){e.target.textContent='Sure?';rst=setTimeout(()=>{rst=0;e.target.textContent='Reset'},2500);return}
+ clearTimeout(rst);rst=0;e.target.textContent='Reset';today(-Math.min(S.c,S.days[dk(new Date())]||0));S.c=0;hist=[];save();render(true)});
+
+/* Info sheet: Islamic dates + support */
+const UPI={id:'shadinazeez07-1@okicici',name:'Shadin Azeez'};
+const upiUri='upi://pay?pa='+UPI.id+'&pn='+encodeURIComponent(UPI.name)+'&cu=INR&tn='+encodeURIComponent('Buy me a tea');
+const D=[
+['2027-01-05','',"Isra Mi'raj",'The Night Journey and Ascension.',"27 Rajab 1448 AH"],
+['2027-01-23','',"Nisf Sha'ban",'The middle night of Sha\'ban.',"15 Sha'ban 1448 AH"],
+['2027-02-08','','Ramadan begins','The first day of Ramadan.','1 Ramadan 1448 AH'],
+['2027-03-06','','Laylat al-Qadr','A commonly observed date for the Night of Decree in the last ten nights of Ramadan.','27 Ramadan 1448 AH'],
+['2027-03-09','','Eid al-Fitr','The festival marking the end of Ramadan.','1 Shawwal 1448 AH'],
+['2027-05-07','','Start of Dhul-Hijjah','The sacred month that includes Hajj, Arafah, Eid al-Adha, and the Days of Tashriq begins.','1 Dhul-Hijjah 1448 AH'],
+['2027-05-14','','Hajj begins','The major pilgrimage days begin in Makkah.','8 Dhul-Hijjah 1448 AH'],
+['2027-05-15','','Day of Arafah','The central day of Hajj, observed by many Muslims with fasting outside Hajj.','9 Dhul-Hijjah 1448 AH'],
+['2027-05-16','','Eid al-Adha','The Festival of Sacrifice, beginning on the tenth day of Dhul-Hijjah.','10 Dhul-Hijjah 1448 AH'],
+['2027-05-17','2027-05-19','Days of Tashriq','The three days following Eid al-Adha.','11-13 Dhul-Hijjah 1448 AH'],
+['2027-06-06','','Islamic New Year','The first day of Muharram and the start of a new Hijri year.','1 Muharram 1449 AH'],
+['2027-06-14','','Tasu\'a','The ninth day of Muharram, often paired with fasting on Ashura.','9 Muharram 1449 AH'],
+['2027-06-15','','Ashura','The tenth day of Muharram.','10 Muharram 1449 AH'],
+['2027-08-14','','Mawlid','Commonly observed as the birth date of the Prophet Muhammad.','12 Rabi al-awwal 1449 AH']];
+function datesHTML(){
+ const T=new Date(new Date().toDateString()),dt=s=>new Date(s+'T00:00'),f=(s,o)=>dt(s).toLocaleDateString('en-US',o);
+ const up=D.filter(x=>dt(x[1]||x[0])>=T),first=up[0];
+ return '<h2>Upcoming</h2>'+up.map(x=>{
+  const n=Math.round((dt(x[0])-T)/864e5),tag=x===first?(n>0?` &middot; in ${n} day${n>1?'s':''}`:' &middot; now'):'';
+  const day=x[1]?f(x[0],{day:'numeric'})+'–'+f(x[1],{day:'numeric'}):f(x[0],{day:'numeric'});
+  return `<div class="ev${x===first?' nx':''}"><div class="dt"><small>${f(x[0],{month:'short'})}</small><b>${day}</b><small>${f(x[0],{weekday:'short'})}${x[1]?'–'+f(x[1],{weekday:'short'}):''}</small></div><div><h3>${x[2]}</h3><p>${x[3]}</p><em>${x[4]}${tag}</em></div></div>`}).join('')+
+ '<p class="fn">Islamic dates follow the lunar Hijri calendar, so they move about 10&ndash;11 days earlier each year. Dates use the Saudi Umm al-Qura civil calendar (via the Aladhan Islamic Calendar API) as of Sep 23, 2026. Local moon sighting and community practice can shift an observance by a day.</p>'
+}
+$('pd').innerHTML=datesHTML();
+$('uid').textContent=UPI.id;
+try{const q=qrcode(0,'M');q.addData(upiUri);q.make();const n=q.getModuleCount();let p='';
+ for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(q.isDark(r,c))p+=`M${c} ${r}h1v1h-1z`;
+ $('qr').innerHTML=`<svg viewBox="-2 -2 ${n+4} ${n+4}" shape-rendering="crispEdges"><path d="${p}" fill="#000"/></svg>`}
+catch(e){$('qr').hidden=true}
+const tea=$('tea');
+if(matchMedia('(pointer:coarse)').matches){tea.href=upiUri;tea.hidden=false}
+$('cp').onclick=async()=>{try{await navigator.clipboard.writeText(UPI.id);toast('UPI ID copied')}catch(e){toast('Copy not available')}};
+const md=$('md');let lf;
+const openM=()=>{lf=document.activeElement;md.hidden=false;$('cl').focus()};
+const closeM=()=>{md.hidden=true;lf&&lf.focus&&lf.focus()};
+$('inf').onclick=openM;$('cl').onclick=closeM;
+md.addEventListener('pointerdown',e=>{if(e.target===md)closeM()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!md.hidden)closeM()});
+$('tabs').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(!b)return;
+ document.querySelectorAll('[data-tab]').forEach(x=>{const on=x===b;x.setAttribute('aria-pressed',on);$(x.dataset.tab).hidden=!on})});
+
+renderRow();render();
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
