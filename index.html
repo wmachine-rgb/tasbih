@@ -132,7 +132,7 @@ const P={
  istighfar:{n:'Istighfar',it:[{ar:'أَسْتَغْفِرُ ٱللَّٰهَ',tr:'Astaghfirullah',en:'I seek forgiveness from Allah',t:100}]},
  tahlil:{n:'Tahlil',it:[{ar:'لَا إِلَٰهَ إِلَّا ٱللَّٰهُ',tr:'La ilaha illallah',en:'There is no god but Allah',t:100}]}
 };
-let S={p:'free',i:0,c:0,target:33,step:1,any:true,snd:false,hap:true,auto:true,theme:null,days:{}};
+let S={p:'free',i:0,c:0,target:33,step:1,any:true,snd:false,hap:true,auto:true,theme:null,days:{},prog:{}};
 try{Object.assign(S,JSON.parse(localStorage.getItem(K)||'{}'))}catch(e){}
 if(!P[S.p])S.p='free';
 S.theme=S.theme||document.documentElement.dataset.theme||'light';
@@ -158,10 +158,14 @@ function milestone(){
  if(!rm){$('rip').animate([{transform:'scale(.9)',opacity:.6},{transform:'scale(1.35)',opacity:0}],{duration:900,easing:'ease-out'});
   const w=$('rw');w.classList.remove('done');void w.offsetWidth;w.classList.add('done')}
 }
+const pk=()=>S.p+':'+S.i;
+const stash=()=>{if(S.c)S.prog[pk()]=S.c;else delete S.prog[pk()]};
+const loadc=()=>{S.c=S.prog[pk()]||0;hist=[]};
 function next(){
  const n=P[S.p].it.length;
- if(S.i<n-1){S.i++;S.c=0;hist=[];toast('Next: '+cur().tr)}
- else{S.i=0;S.c=0;hist=[];toast('Adhkar complete. Ma sha Allah')}
+ stash();
+ if(S.i<n-1){S.i++;loadc();toast('Next: '+cur().tr)}
+ else{P[S.p].it.forEach((x,j)=>delete S.prog[S.p+':'+j]);S.i=0;S.c=0;hist=[];toast('Adhkar complete. Ma sha Allah')}
  save();renderRow();render()
 }
 function add(n){
@@ -206,9 +210,9 @@ document.addEventListener('keydown',e=>{
  if(e.target.closest('input,button')||!$('md').hidden)return;
  if(e.code==='Space'){e.preventDefault();add(S.step)}else if(e.key==='Backspace')undo()});
 $('pr').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b)return;
- S.p=b.dataset.p;S.i=0;S.c=0;hist=[];save();renderRow();render()});
+ stash();S.p=b.dataset.p;S.i=P[S.p].it.findIndex((x,j)=>(S.prog[S.p+':'+j]||0)<(x.t||1e9));if(S.i<0)S.i=0;loadc();save();renderRow();render()});
 $('row').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
- if(b.dataset.t){S.target=+b.dataset.t}else if(b.dataset.i){S.i=+b.dataset.i;S.c=0;hist=[]}else return;
+ if(b.dataset.t){S.target=+b.dataset.t}else if(b.dataset.i){stash();S.i=+b.dataset.i;loadc()}else return;
  save();renderRow();render()});
 $('row').addEventListener('change',e=>{if(e.target.id!=='cu')return;const v=Math.max(1,Math.min(100000,parseInt(e.target.value)||0));
  if(v){S.target=v;save();renderRow();render()}});
@@ -220,7 +224,7 @@ $('th').addEventListener('click',()=>{S.theme=S.theme==='dark'?'light':'dark';
  document.querySelector('meta[name=theme-color]').content=S.theme==='dark'?'#000000':'#f4eddc';save();render()});
 let rst;$('rs').addEventListener('click',e=>{
  if(!rst){e.target.textContent='Sure?';rst=setTimeout(()=>{rst=0;e.target.textContent='Reset'},2500);return}
- clearTimeout(rst);rst=0;e.target.textContent='Reset';today(-Math.min(S.c,S.days[dk(new Date())]||0));S.c=0;hist=[];save();render(true)});
+ clearTimeout(rst);rst=0;e.target.textContent='Reset';today(-Math.min(S.c,S.days[dk(new Date())]||0));S.c=0;stash();hist=[];save();render(true)});
 
 /* Info sheet: Islamic dates + support */
 const UPI={id:'shadinazeez07-1@okicici',name:'Shadin Azeez'};
